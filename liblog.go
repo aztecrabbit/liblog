@@ -1,9 +1,11 @@
 package liblog
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"strings"
+	"golang.org/x/sys/unix"
 )
 
 var (
@@ -17,18 +19,36 @@ var (
 	}
 )
 
+func GetTerminalSize() *unix.Winsize {
+	terminal_size, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
+	if err != nil {
+		// return nil, os.NewSyscallError("GetWinsize", err)
+		panic(err)
+	}
+
+	return terminal_size
+}
+
+func Log(message string, color string, suffix string) {
+	fmt.Printf("%s%s%s%s%s%s", "\r", "\033[K", color, message, Colors["CC"], suffix)
+}
+
 func LogColor(message string, color string) {
 	messages := strings.Split(message, "\n")
 
 	for _, value := range messages {
-		fmt.Printf("\r%s%s%s%s\n", "\033[K", color, value, Colors["CC"])
+		Log(value, color, "\n")
 	}
+}
+
+func Header(messages []string, color string) {
+	LogColor("\033[2J" + "\033[H" + strings.Join(messages, "\n") + "\n", color)
 }
 
 func LogInfo(message string, info string, color string) {
 	datetime := time.Now()
 	LogColor(
-		fmt.Sprintf("[%.2d:%.2d:%.2d] %[4]s::%[5]s %[6]s%[7]s %[4]s::%[5]s %[6]s%[8]s",
+		fmt.Sprintf("[%.2d:%.2d:%.2d]%[5]s %[4]s::%[5]s %[6]s%[7]s%[5]s %[4]s::%[5]s %[6]s%[8]s",
 			datetime.Hour(), datetime.Minute(), datetime.Second(),
 			Colors["P1"], Colors["CC"], color,
 			info, message),
@@ -36,6 +56,25 @@ func LogInfo(message string, info string, color string) {
 	)
 }
 
-func Log(message string) {
-	LogColor(message, Colors["G1"])
+func LogKeyboardInterrupt() {
+    LogInfo(
+    	"Keyboard Interrupt\n\n" +
+    		"|   Ctrl-C again if not exiting automaticly\n" +
+    		"|   Please wait...\n|\n",
+    	"INFO", Colors["R1"],
+    )
+}
+
+func LogException(err error, info string) {
+	LogInfo(fmt.Sprintf("Exception:\n\n|   %v\n|\n", err), info, Colors["R1"])
+}
+
+func LogReplace(message string, color string) {
+	terminal_size := GetTerminalSize()
+
+	if len(message) > int(terminal_size.Col) {
+		message = message[:terminal_size.Col - 4] + "..."
+	}
+
+	Log(message, color, "\r")
 }
