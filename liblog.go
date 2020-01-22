@@ -29,6 +29,17 @@ func GetTerminalSize() *unix.Winsize {
 	return terminal_size
 }
 
+func LimitMessageLength(message string, slice int) string {
+	terminal_size := GetTerminalSize()
+	terminal_width := int(terminal_size.Col)
+
+	if len(message) > terminal_width {
+		message = message[:terminal_width - slice - 4] + "..."
+	}
+
+	return message
+}
+
 func Log(message string, color string, suffix string) {
 	fmt.Printf("%s%s%s%s%s%s", "\r", "\033[K", color, message, Colors["CC"], suffix)
 }
@@ -56,6 +67,24 @@ func LogInfo(message string, info string, color string) {
 	)
 }
 
+func LogInfoSplit(message string, slice int, info string, color string) {
+	terminal_size := GetTerminalSize()
+	terminal_width := int(terminal_size.Col) - slice
+
+	var data string
+
+	for {
+		if len(message) > terminal_width {
+			data, message = message[:terminal_width], strings.TrimSpace(message[terminal_width:])
+			LogInfo(data, info, color)
+			continue
+		}
+
+		LogInfo(message, info, color)
+		break
+	}
+}
+
 func LogKeyboardInterrupt() {
     LogInfo(
     	"Keyboard Interrupt\n\n" +
@@ -70,11 +99,5 @@ func LogException(err error, info string) {
 }
 
 func LogReplace(message string, color string) {
-	terminal_size := GetTerminalSize()
-
-	if len(message) > int(terminal_size.Col) {
-		message = message[:terminal_size.Col - 4] + "..."
-	}
-
-	Log(message, color, "\r")
+	Log(LimitMessageLength(message, 0), color, "\r")
 }
