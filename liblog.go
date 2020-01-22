@@ -29,15 +29,18 @@ func GetTerminalSize() *unix.Winsize {
 	return terminal_size
 }
 
-func LimitMessageLength(message string, slice int) string {
+func LimitMessageLength(message string, slice int) (string, string) {
 	terminal_size := GetTerminalSize()
-	terminal_width := int(terminal_size.Col)
+	terminal_width := int(terminal_size.Col) - slice
+
+	var messages = []string{message, ""}
 
 	if len(message) > terminal_width {
-		message = message[:terminal_width - slice - 4] + "..."
+		messages[0] = message[:terminal_width]
+		messages[1] = message[terminal_width:]
 	}
 
-	return message
+	return messages[0], messages[1]
 }
 
 func Log(message string, color string, suffix string) {
@@ -68,20 +71,18 @@ func LogInfo(message string, info string, color string) {
 }
 
 func LogInfoSplit(message string, slice int, info string, color string) {
-	terminal_size := GetTerminalSize()
-	terminal_width := int(terminal_size.Col) - slice
-
 	var data string
+	var i = 0
 
-	for {
-		if len(message) > terminal_width {
-			data, message = message[:terminal_width], strings.TrimSpace(message[terminal_width:])
+	for len(message) != 0 {
+		data, message = LimitMessageLength(message, slice)
+		if i == 0 {
 			LogInfo(data, info, color)
-			continue
+		} else {
+			LogColor(strings.Repeat(" ", slice) + data, color)
 		}
 
-		LogInfo(message, info, color)
-		break
+		i++
 	}
 }
 
@@ -99,5 +100,6 @@ func LogException(err error, info string) {
 }
 
 func LogReplace(message string, color string) {
-	Log(LimitMessageLength(message, 0), color, "\r")
+	message, _ = LimitMessageLength(message, 4)
+	Log(message + "...", color, "\r")
 }
