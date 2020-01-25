@@ -1,11 +1,11 @@
 package liblog
 
 import (
-	"os"
 	"fmt"
 	"time"
 	"strings"
-	"golang.org/x/sys/unix"
+
+	"github.com/buger/goterm"
 )
 
 var (
@@ -19,21 +19,9 @@ var (
 	}
 )
 
-func GetTerminalSize() *unix.Winsize {
-	terminal_size, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
-	if err != nil {
-		// return nil, os.NewSyscallError("GetWinsize", err)
-		panic(err)
-	}
-
-	return terminal_size
-}
-
 func LimitMessageLength(message string, slice int) (string, string) {
-	terminal_size := GetTerminalSize()
-	terminal_width := int(terminal_size.Col) - slice
-
-	var messages = []string{message, ""}
+	terminal_width := goterm.Width() - slice
+	messages := []string{message, ""}
 
 	if len(message) > terminal_width {
 		messages[0] = message[:terminal_width]
@@ -100,6 +88,9 @@ func LogException(err error, info string) {
 }
 
 func LogReplace(message string, color string) {
-	message, _ = LimitMessageLength(message, 4)
-	Log(message + "...", color, "\r")
+	message, data := LimitMessageLength(message, 4)
+	if len(data) != 0 {
+		message = message + "..."
+	}
+	Log(message, color, "\r")
 }
