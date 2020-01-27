@@ -31,15 +31,15 @@ func LimitMessageLength(message string, slice int) (string, string) {
 	return messages[0], messages[1]
 }
 
-func Log(message string, color string, suffix string) {
-	fmt.Printf("%s%s%s%s%s%s", "\r", "\033[K", color, message, Colors["CC"], suffix)
+func Log(message string, prefix string) {
+	fmt.Printf("%s%s%s%s%s", "\r", "\033[K", message, Colors["CC"], prefix)
 }
 
 func LogColor(message string, color string) {
 	messages := strings.Split(message, "\n")
 
 	for _, value := range messages {
-		Log(value, color, "\n")
+		Log(color + value, "\n")
 	}
 }
 
@@ -92,5 +92,5 @@ func LogReplace(message string, color string) {
 	if len(data) != 0 {
 		message = message + "..."
 	}
-	Log(message, color, "\r")
+	Log(color + message, "\r")
 }
