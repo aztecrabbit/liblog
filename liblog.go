@@ -10,12 +10,12 @@ import (
 
 var (
 	Colors = map[string]string {
-        "R1": "\033[31;1m", "R2": "\033[31;2m",
-        "G1": "\033[32;1m", "G2": "\033[32;2m",
-        "Y1": "\033[33;1m", "Y2": "\033[33;2m",
-        "B1": "\033[34;1m", "B2": "\033[34;2m",
-        "P1": "\033[35;1m", "P2": "\033[35;2m",
-        "C1": "\033[36;1m", "C2": "\033[36;2m", "CC": "\033[0m",
+		"R1": "\033[31;1m", "R2": "\033[31;2m",
+		"G1": "\033[32;1m", "G2": "\033[32;2m",
+		"Y1": "\033[33;1m", "Y2": "\033[33;2m",
+		"B1": "\033[34;1m", "B2": "\033[34;2m",
+		"P1": "\033[35;1m", "P2": "\033[35;2m",
+		"C1": "\033[36;1m", "C2": "\033[36;2m", "CC": "\033[0m",
 	}
 )
 
@@ -75,12 +75,12 @@ func LogInfoSplit(message string, slice int, info string, color string) {
 }
 
 func LogKeyboardInterrupt() {
-    LogInfo(
-    	"Keyboard Interrupt\n\n" +
-    		"|   Ctrl-C again if not exiting automaticly\n" +
-    		"|   Please wait...\n|\n",
-    	"INFO", Colors["R1"],
-    )
+	LogInfo(
+		"Keyboard Interrupt\n\n" +
+			"|   Ctrl-C again if not exiting automaticly\n" +
+			"|   Please wait...\n|\n",
+		"INFO", Colors["R1"],
+	)
 }
 
 func LogException(err error, info string) {
