@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/buger/goterm"
+	"github.com/aztecrabbit/libutils"
 )
 
 var (
@@ -44,7 +45,9 @@ func LogColor(message string, color string) {
 }
 
 func Header(messages []string, color string) {
-	LogColor("\033[2J" + "\033[H" + strings.Join(messages, "\n") + "\n", color)
+	libutils.ClearScreen()
+
+	LogColor(strings.Join(messages, "\n") + "\n", color)
 }
 
 func LogInfo(message string, info string, color string) {
