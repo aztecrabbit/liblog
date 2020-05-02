@@ -2,15 +2,15 @@ package liblog
 
 import (
 	"fmt"
-	"time"
 	"strings"
+	"time"
 
-	"github.com/buger/goterm"
 	"github.com/aztecrabbit/libutils"
+	"github.com/buger/goterm"
 )
 
 var (
-	Colors = map[string]string {
+	Colors = map[string]string{
 		"R1": "\033[31;1m", "R2": "\033[31;2m",
 		"G1": "\033[32;1m", "G2": "\033[32;2m",
 		"Y1": "\033[33;1m", "Y2": "\033[33;2m",
@@ -40,14 +40,14 @@ func LogColor(message string, color string) {
 	messages := strings.Split(message, "\n")
 
 	for _, value := range messages {
-		Log(color + value, "\n")
+		Log(color+value, "\n")
 	}
 }
 
 func Header(messages []string, color string) {
 	libutils.ClearScreen()
 
-	LogColor(strings.Join(messages, "\n") + "\n", color)
+	LogColor(strings.Join(messages, "\n")+"\n", color)
 }
 
 func LogInfo(message string, info string, color string) {
@@ -70,7 +70,7 @@ func LogInfoSplit(message string, slice int, info string, color string) {
 		if i == 0 {
 			LogInfo(data, info, color)
 		} else {
-			LogColor(strings.Repeat(" ", slice) + data, color)
+			LogColor(strings.Repeat(" ", slice)+data, color)
 		}
 
 		i++
@@ -79,8 +79,8 @@ func LogInfoSplit(message string, slice int, info string, color string) {
 
 func LogKeyboardInterrupt() {
 	LogInfo(
-		"Keyboard Interrupt\n\n" +
-			"|   Ctrl-C again if not exiting automaticly\n" +
+		"Keyboard Interrupt\n\n"+
+			"|   Ctrl-C again if not exiting automaticly\n"+
 			"|   Please wait...\n|\n",
 		"INFO", Colors["R1"],
 	)
@@ -95,5 +95,5 @@ func LogReplace(message string, color string) {
 	if len(data) != 0 {
 		message = message + "..."
 	}
-	Log(color + message, "\r")
+	Log(color+message, "\r")
 }
